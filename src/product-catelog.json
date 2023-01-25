@@ -1,0 +1,28 @@
+{
+    "catelog": [                                         
+        {
+            "id": 1,
+            "img": "../images/prodImg1.png",
+            "text": "Men Graphic Patched Detail Denim Jacket",
+            "price": "GBP 34.99"
+        },
+        {
+            "id": 2,
+            "img": "../images/prodImg2.png",
+            "text": "Men Slogan Graphic Flap Pocket Denim Jacket",
+            "price": "GBP 33.99"
+        },
+        {
+            "id": 3,
+            "img": "",
+            "text": "Men Random Rocket & Letter Denim Jacket",
+            "price": "GBP 36.99"
+        },
+        {
+            "id": 4,
+            "img": "",
+            "text": "Men Letter & Fire Print Denim Jacket",
+            "price": "GBP 29.99"
+        }
+    ]
+}
