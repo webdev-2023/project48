@@ -17,8 +17,8 @@ Note 2: Separation of concerns: the views should be “dumb” and “React” t
         Hence, I have defined userSignIn(), calculateInterest() and logOut() functions at the top level here at App.js
 */
 
-import { useState } from 'react'
-import { Routes, Route, Link } from "react-router-dom";
+import React from "react"
+import { Routes, Route } from "react-router-dom";
 import Header from "./components/Header"
 import LandingPage from "./components/LandingPage"
 import Products from "./components/Products"
@@ -26,82 +26,55 @@ import InterestCalculator from './components/InterestCalculator';
 import User from './components/User';
 import Legal from './components/Legal';
 import Footer from "./components/Footer"
-import prodImg1 from './images/prodImg1.png'
-import prodImg2 from './images/prodImg2.png'
-import prodImg3 from './images/prodImg3.png'
+import productList from './productList';
 
-let userName = ""
-const productList = [                                         // created a list of products to be displayed. Ideally, this should come from the backend
-  {
-    "id": 1,
-    "img": prodImg1,
-    "text": "Men Graphic Patched Detail Denim Jacket",
-    "price": "GBP 34.99"
-  },
-  {
-    "id": 2,
-    "img": prodImg2,
-    "text": "Men Slogan Graphic Flap Pocket Denim Jacket",
-    "price": "GBP 33.99"
-  },
-  {
-    "id": 3,
-    "img": prodImg3,
-    "text": "Men Random Rocket & Letter Denim Jacket",
-    "price": "GBP 36.99"
-  },
-]
-
-function App() {
-  const [isLoggedIn, setLoggedIn] = useState(false)             // using useState hook to track changes in the state of isLoggedIn property
-  const [rate, setRate] = useState(20)                          // Interest rate 'state', initilizing it to 20%
-  const [interestAmt, setInterestAmt] = useState('')            // Interest amount 'state', will be passed to the child compoment for display
-  const [monthlyPayment, setMonthlyPayment] = useState('')      // Monthly Payment 'state', will be passed to the child compoment for display
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoggedIn: false,
+    }
+    this.userName = ''
+  }
 
   // Let the user sign-in by clicking the 'Sign In' button in the Header. It will display the welcome message.
-  const userSignIn = () => {
-    let ans = prompt("Do you want to Sign in?: Yes/No").toLowerCase()
-    if (ans === 'yes') {
-      userName = prompt("Enter your Name")
-      setLoggedIn(true)                                         // changing the state of isLoggedIn to true
+  userSignIn = () => {
+    if (this.state.isLoggedIn) {
+      alert(`You have logged out ${this.userName}!`)
+      this.userName = ''
+      this.setState({
+        isLoggedIn: false
+      });
+    }
+    else {
+      let ans = prompt("Do you want to Sign in?: Yes/No").toLowerCase()
+      if (ans === 'yes') {
+        this.userName = prompt("Enter your Name")
+        this.setState({
+          isLoggedIn: true
+        })
+      }
     }
   }
 
-  // Calculate total interest and monthly payment for given shopping total and number of months
-  const calculateInterest = ({ total, months }) => {
-    total = Number(total)
-    months = Number(months)
-    let interest = total * (rate / 100) * (months / 12)
-    let monthlyPayment = (Math.round(((total + interest) / months) * 100) / 100).toFixed(2)     // two decimal places
-    interest = (Math.round(interest * 100) / 100).toFixed(2)                                    // two decimal places
-
-    setInterestAmt(interest)
-    setMonthlyPayment(monthlyPayment)
-  }
-
-  // Display alert message and 'Sign-in' button when a user logout.
-  const logOut = () => {
-    alert("User has logged out.")
-    userName = ""
-    setLoggedIn(false)
-  }
-
-  return (
-    <div className="page-container">
-      <Header title="NC CLOTHING" isLoggedIn={isLoggedIn} name={userName} onClick={userSignIn} />
-      <div className='content-wrap'>
-        {/* React Route for defining navigation between pages */}
-        <Routes>
-          <Route exact path="/" element={<LandingPage />} />
-          <Route path="/catelog" element={<Products products={productList} />} />
-          <Route path="/calculator" element={<InterestCalculator rate={rate} interestAmt={interestAmt} monthlyPayment={monthlyPayment} calculateInterest={calculateInterest} />} />
-          <Route path="/user" element={<User name={userName} onClick={logOut} />} />
-          <Route path="/legal" element={<Legal />} />
-        </Routes>
+  render() {
+    return (
+      <div className="page-container">
+        <Header title="NC CLOTHING" isLoggedIn={this.state.isLoggedIn} name={this.userName} onClick={this.userSignIn} />
+        <div className='content-wrap'>
+          {/* React Route for defining navigation between pages */}
+          <Routes>
+            <Route exact path="/" element={<LandingPage />} />
+            <Route path="/catelog" element={<Products products={productList} />} />
+            <Route path="/calculator" element={<InterestCalculator />} />
+            <Route path="/user" element={<User isLoggedIn={this.state.isLoggedIn} name={this.userName} onClick={this.userSignIn} />} />
+            <Route path="/legal" element={<Legal />} />
+          </Routes>
+        </div>
+        <Footer />
       </div>
-      <Footer />
-    </div>
-  );
+    )
+  }
 }
 
 export default App

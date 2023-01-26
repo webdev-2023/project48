@@ -7,76 +7,115 @@ Since, a 'form' is a 'controlled compoment' in React, I am using useState react 
 (otherwise, ideally 'states' are defined and managed at the top level component e.g. App.js)
 Reference: https://reactjs.org/docs/forms.html
 */
-import { useState } from 'react'
+import React from "react"
 
-const InterestCalculator = ({ rate, interestAmt, monthlyPayment, calculateInterest }) => {
-    const [total, setTotal] = useState('')
-    const [months, setMonths] = useState('')
+class InterestCalculator extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            total: '',
+            months: '',
+            rate: 20,
+            interestAmt: '',
+            monthlyPayment: ''
+        }
+        this.userName = ''
+    }
+    // const [total, setTotal] = useState('')
+    // const [months, setMonths] = useState('')
 
-    const onSubmit = (e) => {
+    onSubmit = (e) => {
         e.preventDefault()
 
-        if (!total) {                                                   // field level validation
+        if (!this.state.total) {                                                   // field level validation
             alert('Please enter your shopping total amount.')
             return
         }
 
-        if (!months) {
+        if (!this.state.months) {
             alert('Please enter number of months for pay back.')        // field level validation
             return
         }
 
-        calculateInterest({ total, months })                            // calculateInterest() is defined in the parent compement- App.js
+        this.calculateInterest(this.state.total, this.state.months)                            // calculateInterest() is defined in the parent compement- App.js
 
-        setTotal('')
-        setMonths('')
+        this.setState({
+            total: ''
+        })
+
+        this.setState({
+            months: ''
+        })
+        // setTotal('')
+        // setMonths('')
     }
+
+    // Calculate total interest and monthly payment for given shopping total and number of months
+    calculateInterest = (total, months) => {
+        total = Number(total)
+        months = Number(months)
+        let interest = total * (this.state.rate / 100) * (months / 12)
+        let monthlyPayment = (Math.round(((total + interest) / months) * 100) / 100).toFixed(2)     // two decimal places
+        interest = (Math.round(interest * 100) / 100).toFixed(2)                                    // two decimal places
+
+        this.setState({
+            interestAmt: interest
+        })
+
+        this.setState({
+            monthlyPayment: monthlyPayment
+        })
+    }
+
+
     // Created two sections - one for 'Calculator' (for user inputs) and other for 'Results'
-    return <div className='interest-cal-container'>
-        <section className='interest-cal-section'>
-            <h4>Calculator</h4>
-            <form className='interest-cal-control' onSubmit={onSubmit}>
-                <label>Total Shopping Amount: </label>
-                <input
-                    className='interest-cal-control'
-                    type="text"
-                    size={10}
-                    value={total}
-                    onChange={(e) => setTotal(e.target.value)}
-                />
-                <br />
-                <label>Number of Months: </label>
-                <input
-                    className='interest-cal-control'
-                    type="text"
-                    size={5}
-                    value={months}
-                    onChange={(e) => setMonths(e.target.value)}
-                />
-                <br />
-                <label>Interest Rate: </label>
-                <input
-                    className='interest-cal-control'
-                    type="text"
-                    size={5}
-                    value={`${rate}%`}
-                    readOnly={true}
-                // onChange={(e) => setMonths(e.target.value)}
-                />
-                <br />
-                <input className='btn' type="submit" value='Calculate' />
-            </form>
-        </section>
-        <section className='interest-cal-section'>
-            <h4 >Results</h4>
-            <p className='interest-cal-control'>Total Interest:
-                <span style={{ fontWeight: 'normal' }}>{interestAmt && `GBP ${interestAmt}`}</span>
-            </p>
-            <p className='interest-cal-control'>Monthly Payment:
-                <span style={{ fontWeight: 'normal' }}>{monthlyPayment && `GBP ${monthlyPayment}`}</span>
-            </p>
-        </section>
-    </div >;
+    render() {
+        return <div className='interest-cal-container'>
+            <section className='interest-cal-section'>
+                <h4>Calculator</h4>
+                <form className='interest-cal-control' onSubmit={this.onSubmit}>
+                    <label>Total Shopping Amount: </label>
+                    <input
+                        className='interest-cal-control'
+                        type="text"
+                        size={10}
+                        value={this.state.total}
+                        onChange={(e) => this.setState({ total: e.target.value })}
+                    />
+                    <br />
+                    <label>Number of Months: </label>
+                    <input
+                        className='interest-cal-control'
+                        type="text"
+                        size={5}
+                        value={this.state.months}
+                        onChange={(e) => this.setState({ months: e.target.value })}
+                    />
+                    <br />
+                    <label>Interest Rate: </label>
+                    <input
+                        className='interest-cal-control'
+                        type="text"
+                        size={5}
+                        value={`${this.state.rate}%`}
+                        readOnly={true}
+                    // onChange={(e) => setMonths(e.target.value)}
+                    />
+                    <br />
+                    <input className='btn' type="submit" value='Calculate' />
+                </form>
+            </section>
+            <section className='interest-cal-section'>
+                <h4 >Results</h4>
+                <p className='interest-cal-control'>Total Interest:
+                    <span style={{ fontWeight: 'normal' }}>{this.state.interestAmt && `GBP ${this.state.interestAmt}`}</span>
+                </p>
+                <p className='interest-cal-control'>Monthly Payment:
+                    <span style={{ fontWeight: 'normal' }}>{this.state.monthlyPayment && `GBP ${this.state.monthlyPayment}`}</span>
+                </p>
+            </section>
+        </div >;
+    }
 };
 
 export default InterestCalculator;
